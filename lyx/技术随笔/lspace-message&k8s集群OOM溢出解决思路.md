@@ -94,15 +94,31 @@ grafana搜索 pod
 
 ![image-20240114123053750](https://lyx-study-note-image.oss-cn-shenzhen.aliyuncs.com/img/image-20240114123053750.png)
 
+因为是OOM问题，所以我们直接去
 
 
 
+查看该容器cpu额度
+
+![image-20240116101837101](https://lyx-study-note-image.oss-cn-shenzhen.aliyuncs.com/img/image-20240116101837101.png) 
 
 
 
+![image-20240116101945361](https://lyx-study-note-image.oss-cn-shenzhen.aliyuncs.com/img/image-20240116101945361.png) 
 
 
 
+可以看到Memory Usage视图已经到达了限制从而导致重启
+
+![image-20240116102414694](https://lyx-study-note-image.oss-cn-shenzhen.aliyuncs.com/img/image-20240116102414694.png) 
+
+
+
+所以可以判定是当前给定的容器的内存不足导致的message重启，只需要修改启动脚本把内存大小升高。
+
+```shell
+helm upgrade -i $SERVICE_NAME  lspace-prod/lspace-service --set image.tag=${IMAGE_TAG},serviceName=$SERVICE_NAME,replicaCount=$REPLICA,resources.limits.memory=800Mi,resources.requests.memory=800Mi,spring.profiles.active=$ENVIROMENT --kubeconfig $KUBE_CONFIG -n $KUBE_NAMESPACE
+```
 
 
 
